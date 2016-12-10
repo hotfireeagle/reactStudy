@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="zh">
+
+<head>
+    <title>test react</title>
+    <meta charset="utf-8" />
+    <meta name="keywords" content="test react" />
+    <meta name="description" content="for test" />
+    <meta name="robots" content="all" />
+    <meta name="author" content="xxxx" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <script type="text/javascript" src="../frame/react.js"></script>
+    <script type="text/javascript" src="../frame/react-dom.js"></script>
+    <script type="text/javascript" src="../frame/babel_browser.js"></script>
+</head>
+
+<body>
+    <div id="content"></div>
+    <script type="text/babel">
+        var createXHR = function(){
+            if(typeof XMLHttpRequest != "undefined"){
+                createXHR = function(){return new XMLHttpRequest();};
+            }else if(typeof ActiveXObject != "undefined"){
+                createXHR = function(){
+                    if(Object.prototype.toString.call(arguments.callee.par) != "[object String]"){
+                        var str = ["MSXML2.XMLHttp.6.0","MSXML2.XMLHttp.3.0","MSXML2.XMLHttp"] , i , length;
+                        for(i = 0 , length = str.length ; i < length ; i++){
+                            try{
+                                new ActiveXObject(str[i]);
+                                arguments.callee.par = str[i];
+                                break;
+                            }catch(err){}
+                        }
+                    }
+                    return new ActiveXObject(arguments.callee.par);
+                };
+            }else{
+                createXHR = function(){throw new Error('Your browser do not support XHR!');};
+            }
+            return createXHR();
+        };
+
+        var getData = function(url){
+            var self = this;
+            console.log(this.state.data);
+            var xhr = createXHR();
+            if(xhr){
+                xhr.onreadystatechange = function(){
+                    if(xhr.readyState == 4){
+                        if((xhr.status >= 200 && xhr.status <= 300) || xhr.status == 304){
+                            var objData = JSON.parse(xhr.responseText);
+                            self.setState({'data' : objData});
+                        }else{
+                            console.log('your browser receive wrong response from server!');
+                        }
+                    }else{
+                        console.log('you browser do not send xhr!');
+                    }
+                };
+                xhr.open('get',url,true);
+                xhr.send(null);
+            }
+        };
+
+        var CommentBox = React.createClass({
+            submitComment(){
+                
+            }
+            ,getInitialState(){
+                return {'data' : []};
+            }
+            ,componentDidMount(){
+                var that = this;
+                var url = "http://localhost:8080/" + this.props.url;
+                getData.call(this,url);
+                setInterval(function(){getData.call(that,url);},2000);
+            }
+            ,render(){
+                return (
+                    <div className="commentBox">
+                        <h1>Comments</h1>
+                        <CommentList data = {this.state.data} />
+                        <CommentForm onSubmitComment = {this.submitComment}/>
+                    </div>); 
+            }
+        });
+        
+        var CommentList = React.createClass({
+            render(){
+                if('map' in this.props.data){
+                    var commentNodes = this.props.data.map((data) => {
+                            if('author' in data && 'text' in data){
+                                return (<Comment author = {data.author}>{data.text}</Comment>);
+                            }else{
+                                return 'hhhh';
+                            }
+                    });
+                }else{
+                    var commentNodes = 'xxxxx';
+                }
+                return (
+                    <div className = "commentList">{commentNodes}</div>
+                );
+            }
+        });
+
+        var CommentForm = React.createClass({
+            render(){
+                return (<div className = "commentForm">Hello , World ! I am commentform!</div>);
+            }
+        });
+
+        var Comment = React.createClass({
+            render(){
+                return (
+                    <div className = "comment">
+                        <h1>{this.props.author}</h1>
+                        {this.props.children.toString()}
+                    </div>
+                );
+            }
+        });
+        ReactDOM.render(<CommentBox data = {{'a' : 1}} url = "comments/page1.json" /> , document.getElementById('content'));
+    </script>
+</body>
+
+</html>
