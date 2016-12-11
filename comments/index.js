@@ -66,7 +66,7 @@ var getIP = function(request){return request.headers['x-forwarded-for'] || reque
 var serverHandler = function(req , res){
     var clientDetail = req.headers;//this is object
     var requestMethod = req.method , requestUrl = url.parse(req.url).pathname;//file-name
-    console.log(requestUrl);
+    //console.log(requestUrl);
     var type = requestUrl.split('.')[1].trim();
     if(type == 'json'){type = 'application/json';}
     if(type == 'xml'){type = 'application/xml';}
@@ -74,21 +74,42 @@ var serverHandler = function(req , res){
     if(type == 'css'){type = 'text/css';}
     if(type == 'jpg'){type = 'image/jpg';}
     if(type == 'png'){type == 'image/png';}
-    console.log(type);
+    //console.log(type);
     var clientData = '' , num = 1 , ip = getIP(req) , router = getMIME(clientDetail);//router
-    if(hasBody(req)){
-        req.on('data' , (chunk) => {clientData += chunk.toString('utf8');});
-    }
     req.on('error' , (err) => {console.log('Server accur error when receive data from client');});
-    req.on('end' , () => {num++;console.log(`${num}-->${ip}......${requestUrl}`);});
-    fs.readFile(requestUrl , (err , chunk) => {
-        if(err){console.log(`accur error in the process of read file -> ${err}`);}
-        else{
-            res.setHeader('Content-Type' , type);
-            res.write(chunk);
+    if(requestMethod == 'GET'){
+        //req.on('end' , () => {num++;console.log(`${num}-->${ip}......${requestUrl}`);});
+        fs.readFile(requestUrl , (err , chunk) => {
+            if(err){console.log(`accur error in the process of read file -> ${err}`);}
+            else{
+                res.setHeader('Content-Type' , type);
+                res.write(chunk);
+                res.end();
+            }   
+        });
+    }else if(requestMethod == 'POST'){
+        //console.log('post');
+        //if(hasBody(clientDetail)){
+            console.log('post');
+            req.on('data' , (chunk) => {clientData += chunk;});
+            req.on('end' , () => {
+                console.log('XXXXXXXXXXXXXXXXXXXXXX' + clientData + (typeof clientData));
+                var fileData = fs.readFileSync(requestUrl,'utf8');
+                fileData = fileData.substr(0,fileData.length-2);
+                clientData = ',\n' + clientData + '\n]';
+                fileData += clientData;
+                //fileData = Array.from(fileData);
+                //fileData = Array.from(fileData).concat([clientData]);
+                console.log(`before ${fileData} typeof fileData ${Object.prototype.toString.call(fileData)}`);
+                console.log(`typeof clientData ${Object.prototype.toString.call(clientData)} ${clientData}`);
+                console.log(`after ${fileData}`);
+                fs.writeFile(requestUrl , fileData , (err) => {if(err){console.log(`accurs error in write file ${err}`);}});
+            });
+            res.writeHead(200,'ok');
+            res.write('receive post');
             res.end();
-        }
-    });
+        //}
+    }
 };
 
 var server = http.createServer(serverHandler);
