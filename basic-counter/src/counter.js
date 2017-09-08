@@ -40,7 +40,8 @@ class Counter extends Component{
 	}
 
 	decrementClick(ev){
-		this.setState({"times": this.state.times-1})
+		let value = (this.state.times-1) >= 0 ? (this.state.times-1) : 0;
+		this.setState({"times": value})
 	}
 
 	render(){
