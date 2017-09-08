@@ -63,21 +63,21 @@ class Counter extends Component{
 		return (
 			<div>
 				<div style={divStyle}>
-					<button style={btnStyle} onClick={() => {this.handleClick({"first": this.state.first+1})()}}>+</button>
+					<button style={btnStyle} onClick={this.handleClick({"first": this.state.first+1})()}>+</button>
 					<span style={spanStyle}>{this.state.first}</span>
-					<button style={btnStyle} onClick={() => {this.handleClick({"first": (this.state.first-1)>=0 ? (this.state.first-1): 0})()}}>-</button>
+					<button style={btnStyle} onClick={this.handleClick({"first": (this.state.first-1)>=0 ? (this.state.first-1): 0})()}>-</button>
 				</div>
 
 				<div style={divStyle}>
-					<button style={btnStyle} onClick={() => {this.handleClick({"second": this.state.second+1})()}}>+</button>
+					<button style={btnStyle} onClick={this.handleClick({"second": this.state.second+1})()}>+</button>
 					<span style={spanStyle}>{this.state.second}</span>
-					<button style={btnStyle} onClick={() => {this.handleClick({"second": (this.state.second-1)>=0 ? (this.state.second-1) : 0})()}}>-</button>
+					<button style={btnStyle} onClick={this.handleClick({"second": (this.state.second-1)>=0 ? (this.state.second-1) : 0})()}>-</button>
 				</div>
 
 				<div style={divStyle}>
-					<button style={btnStyle} onClick={() => {this.handleClick({"third": this.state.third+1})()}}>+</button>
+					<button style={btnStyle} onClick={this.handleClick({"third": this.state.third+1})()}>+</button>
 					<span style={spanStyle}>{this.state.third}</span>
-					<button style={btnStyle} onClick={() => {this.handleClick({"third": (this.state.third-1)>=0 ? (this.state.third-1) : 0})()}}>-</button>
+					<button style={btnStyle} onClick={this.handleClick({"third": (this.state.third-1)>=0 ? (this.state.third-1) : 0})()}>-</button>
 				</div>
 
 				<div style={sumStyle}>
