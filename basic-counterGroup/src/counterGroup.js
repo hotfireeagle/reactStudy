@@ -53,7 +53,7 @@ class Counter extends Component{
 
 	render(){
 		let summary = 0;
-		//注意一定要不能省略变量定义关键字，否则会出错，大概react的源代码开启了严格模式
+		//注意一定要不能省略变量定义关键字，否则会出错，原因是ES2015引入的class语法规定了在class body使用严格模式
 		for(var key in this.state){
 			if(this.state.hasOwnProperty(key)){
 				summary += this.state[key]
